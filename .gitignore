@@ -1,0 +1,9 @@
+# Obsidian workspace (changes constantly)
+.obsidian/workspace.json
+
+# Claudian session data
+.claudian/sessions/
+
+# OS files
+.DS_Store
+Thumbs.db
