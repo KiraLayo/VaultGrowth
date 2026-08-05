@@ -48,6 +48,7 @@ updated: YYYY-MM-DD
 sources: ["[[source-page-name]]"]
 summary: "One-line summary"
 status: 种子 | 成长中 | 成熟          # how developed is this page?
+mastery: 未学 | 学习中 | 已掌握 | 待复习   # optional; your recall level, orthogonal to status
 ---
 ```
 
@@ -55,6 +56,10 @@ status: 种子 | 成长中 | 成熟          # how developed is this page?
 - `种子` (seed): bare stub — a placeholder with a definition and a link or two, waiting to be filled out.
 - `成长中` (growing): has substantive content but still missing connections, examples, or depth.
 - `成熟` (mature): well-developed — comprehensive coverage, rich cross-links, multiple sources.
+
+**Mastery meanings** (optional field):
+- `mastery` answers "how well do I know this?" while `status` answers "how developed is this page?" — they are orthogonal.
+- Use for exam points, vocabulary, or anything that needs recall tracking. Updated during Review, not during ingest.
 
 ### Page naming
 
@@ -82,6 +87,21 @@ Raw sources should follow a naming convention that makes their origin obvious:
 
 When you create a source summary page in `wiki/sources/`, name it to match: use the same filename (minus extension if you prefer a cleaner title) so the link is obvious.
 
+Course material layout: `raw/articles/课程名/第N章/` per-chapter folders with
+`课件总结-第N章.md` naming. Keep names stable once set.
+
+### Images (assets)
+
+- Source images (from courseware/clips) stay in `raw/assets/` untouched. When embedding
+  into wiki pages, copy to `wiki/assets/` with a descriptive Chinese name
+  (e.g. `RAID5示意图.jpeg`) and embed with `![[wiki/assets/filename]]` plus a caption:
+  `> 图：xxx（课件原图）`.
+- Embed position follows the image's position in the original text → the matching
+  concept/knowledge section.
+- Source pages keep an image manifest (file → content → embedded page).
+- Missing exam figures: prefer an inline mermaid diagram (Obsidian-native) over
+  generating image files.
+
 ### Domain-specific conventions
 
 **技术 (Technology):**
@@ -107,9 +127,33 @@ When you create a source summary page in `wiki/sources/`, name it to match: use 
 - Synthesis pages for comparing traditions or tracing idea evolution.
 - Distinguish between *exposition* (what X believed) and *evaluation* (your take on X).
 
+**备考 / Exam prep (e.g. 软考):**
+- Courseware (课件) is the primary source; subtitles/transcripts are supplementary — clean
+  filler words and timestamps, and do NOT create a page per video lecture.
+- 真题/练习 usually come embedded in the video course itself (tutorial + exercise format).
+  During ingest, extract worked examples into concept pages as "真题演练" blocks (with
+  answer + 常见坑), cited to the course source page. No separate exam files required; if
+  standalone 真题 sets ever arrive, put them in `raw/exams/` (optional).
+- Mark exam points: 必考 / 常考 / 不考. Content deleted in the current textbook edition is
+  marked "已删除，不再考" so lint can spot cross-version contradictions.
+- Keep a chapter learning-roadmap synthesis page as a living progress panel; update it after
+  every chapter ingest.
+
 ### Linking
 
 - Every claim should trace back to a source via `[[wiki/sources/...]]`.
+- **Only source pages reference `raw/` paths** — their 原始文件 field is the single
+  reference point for the raw file. Wiki pages never embed raw/ paths directly; they
+  link raw content only through `[[wiki/sources/...]]` pages.
+- Default to **short-form links** `[[Page Name]]` (Obsidian resolves by filename).
+  Use full paths `[[wiki/entities/Page]]` only when basenames collide across categories;
+  index.md entries keep full paths.
+- When a raw file is renamed or moved: update only the matching source page — short links
+  elsewhere need no cascade. Keep raw names stable once set: renames are the most
+  expensive wiki operation.
+- **Source conflicts**: when sources disagree (e.g. courseware vs video), keep both
+  versions on the page with a `> 口径说明` block quoting each source; the textbook/真题
+  wins. Flag, don't silently pick one.
 - Cross-link aggressively across domains — a programming concept that mirrors a philosophical idea is gold.
 - Link to prerequisite concepts. A page on Rust traits should link to type systems; a page on subjunctive should link to indicative.
 - If you mention something that should have its own page but doesn't yet, **create it as a seed** immediately.
@@ -120,18 +164,26 @@ When you create a source summary page in `wiki/sources/`, name it to match: use 
 - Each entry: `- [[wiki/entities/Page Name]] — summary (YYYY-MM-DD, N sources, 🌱/🌿/🌳)` (use full paths to avoid name collisions across categories)
 - 🌱 = 种子 (seed) · 🌿 = 成长中 (growing) · 🌳 = 成熟 (mature)
 - Update on every ingest. Read first when answering queries.
+- Progress/status claims live in ONE place (the chapter roadmap synthesis page / the
+  relevant entity page); meta pages reference these instead of copying volatile state.
 
 ### Log (log.md)
 
 - Append-only. Format each entry:
   ```
-  ## [YYYY-MM-DD] {ingest | query | lint | review | init} | Brief description
+  ## [YYYY-MM-DD] {ingest | query | lint | review | journal | init} | Brief description
   ```
 - For ingests: list files created/updated and the raw source that triggered it.
 - For queries: note what was asked and whether output was filed as a synthesis or journal entry.
 - For reviews: note progress, insights, next goals.
 
 ## Operations
+
+> **Confirm before ingesting.** For every ingest, first state the scope and granularity —
+> which raw files, roughly how many wiki pages, and whether this is a single source or a
+> chapter-level batch. If the user explicitly listed the files and asked for ingest,
+> proceed after stating scope; if intent is unclear or the request is open-ended,
+> WAIT for the user's OK. Never ingest a whole course or a large backlog of files in one go.
 
 ### Ingest a source
 
@@ -148,6 +200,38 @@ When the user drops a file into `raw/` and asks you to ingest it:
 
 A single source typically touches 5–15 wiki pages. Be thorough.
 
+### Ingest a course chapter (incremental batch)
+
+For course-based learning (exam prep, language courses) where raw material arrives chapter
+by chapter and learning deepens over time:
+
+1. **Confirm scope first** — which chapter, which files, batch granularity (see rule above).
+2. **Read** the chapter's courseware as the skeleton, then subtitles/transcripts as
+   supplementary detail (skip filler words and timestamps). **Extract any 题目/练习
+   embedded in the lectures** — this course format is tutorial + exercises, so worked
+   examples live inside the video content itself.
+3. **Discuss** learning-oriented takeaways: new exam points, formula changes, claims that
+   contradict earlier chapters.
+4. **Create seeds only for genuinely new concepts.** Everything that already has a page gets
+   an **incremental merge** — new facts, examples, and contradictions go into the existing
+   page. Never create a second page for an existing concept. Each lecture may contribute
+   new worked examples — they accumulate in the same page's 真题演练 block, never in a
+   new page.
+5. **Update** the chapter's learning-roadmap synthesis page (check off completed modules).
+6. **Update** `index.md` (only pages touched this round) and append `log.md`.
+7. **Mark** `mastery: 待复习` on calculation/recall-heavy pages.
+8. **Remind** the user of pending review items from earlier chapters.
+
+### Re-ingest an updated source
+
+When the user updates a raw file (e.g. courseware gains images or revisions):
+
+1. Compare the new content against the source page and affected wiki pages.
+2. Rewrite the source page (structure, image manifest, new details).
+3. Merge new/changed facts into existing pages — never create duplicate pages.
+4. Handle new images per the Images conventions above.
+5. Note remaining gaps (missing figures → mermaid) and log as `ingest | 重摄入`.
+
 ### Answer a query
 
 1. **Read** `index.md` to find relevant pages.
@@ -163,6 +247,13 @@ When the user wants to review past learning:
 2. Re-read the page, then ask the user a few probing questions to test recall.
 3. Update the page with any new insights that come up during review. Promote `种子 → 成长中` or `成长中 → 成熟` if appropriate.
 4. Log the review session in `log.md`.
+
+Additional rules:
+
+- For calculation-type pages (exam prep), cover the formula and redo the steps from memory;
+  update the page's 常见坑 section with anything that tripped you up.
+- Update `mastery` on reviewed pages (已掌握 / 待复习) and tick the roadmap checklist.
+- Review sessions are the trigger for promoting `种子 → 成长中 → 成熟`.
 
 ### Journal
 
@@ -184,6 +275,12 @@ Periodically health-check. Look for:
 - **Seed debt**: too many 种子 pages that never got developed.
 - **Cross-domain opportunities**: a concept in one domain that mirrors one in another, not yet linked.
 - **Knowledge gaps**: topics the user clearly cares about but hasn't sourced yet.
+- **Duplicate concepts**: two pages describing the same concept under different names — merge candidates.
+- **Version contradictions**: claims marked "已删除/不再考" that conflict with newer sources.
+- **Ingest hygiene**: recently created pages that should have been merged into existing ones.
+- **Broken links**: every wikilink, raw reference, and image embed must resolve to an existing file (raw moves/renames silently break source-page references).
+- **Source-page consistency**: each source page's 原始文件 link matches the actual raw file path/name.
+- **Meta drift**: progress/status claims in meta pages (使用指南, entity pages) match current state.
 
 Report findings and fix them. Log what was done.
 
