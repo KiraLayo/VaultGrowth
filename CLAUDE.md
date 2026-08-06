@@ -282,6 +282,7 @@ Periodically health-check. Look for:
 - **Broken links**: every wikilink, raw reference, and image embed must resolve to an existing file (raw moves/renames silently break source-page references).
 - **Source-page consistency**: each source page's 原始文件 link matches the actual raw file path/name.
 - **Meta drift**: progress/status claims in meta pages (使用指南, entity pages) match current state.
+- **Frontmatter validity**: YAML must parse — quotes balanced, dates YYYY-MM-DD, no duplicate keys, and no `#` inside flow arrays (`tags: [a, #b]` makes the bracket unclosed — frontmatter tags are written without `#`).
 
 Report findings and fix them. Log what was done.
 

@@ -1,7 +1,7 @@
 ---
 type: concept
 domain: 技术
-tags: [软考, 系统分析师, 操作系统, 进程同步, #os]
+tags: [软考, 系统分析师, 操作系统, 进程同步, os]
 created: 2026-08-04
 updated: 2026-08-04
 sources: ["[[wiki/sources/课件总结-第二章]]", "[[wiki/sources/2.1操作系统概述-进程管理-同步互斥]]", "[[wiki/sources/2.2进程通信-死锁-存储管理-固定分页分段]]"]
