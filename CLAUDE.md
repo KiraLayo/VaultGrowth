@@ -212,11 +212,12 @@ by chapter and learning deepens over time:
    examples live inside the video content itself.
 3. **Discuss** learning-oriented takeaways: new exam points, formula changes, claims that
    contradict earlier chapters.
-4. **Create seeds only for genuinely new concepts.** Everything that already has a page gets
-   an **incremental merge** — new facts, examples, and contradictions go into the existing
-   page. Never create a second page for an existing concept. Each lecture may contribute
-   new worked examples — they accumulate in the same page's 真题演练 block, never in a
-   new page.
+4. **Create seeds only for genuinely new concepts.** Before creating any page, run a quick
+   vault-wide grep on the proposed concept name (plus likely synonyms) — any hit means
+   **incremental merge** instead: new facts, examples, and contradictions go into the
+   existing page. Never create a second page for an existing concept. Each lecture may
+   contribute new worked examples — they accumulate in the same page's 真题演练 block,
+   never in a new page.
 5. **Update** the chapter's learning-roadmap synthesis page (check off completed modules).
 6. **Update** `index.md` (only pages touched this round) and append `log.md`.
 7. **Mark** `mastery: 待复习` on calculation/recall-heavy pages.
