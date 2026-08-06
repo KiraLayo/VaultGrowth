@@ -1,5 +1,6 @@
 [
   "realclaudian",
   "obsidian-local-rest-api",
-  "obsidian-git"
+  "obsidian-git",
+  "mermaid-elk-renderer"
 ]
