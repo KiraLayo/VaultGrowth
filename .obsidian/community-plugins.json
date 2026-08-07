@@ -2,5 +2,6 @@
   "realclaudian",
   "obsidian-local-rest-api",
   "obsidian-git",
-  "mermaid-elk-renderer"
+  "mermaid-elk-renderer",
+  "webpage-html-export"
 ]
